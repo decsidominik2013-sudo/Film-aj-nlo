@@ -5,25 +5,175 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Film Ajánló</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #141414;
         }
+        
+        /* Fade in animation for page load */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        /* Staggered animation for movie cards */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         .movie-card {
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
-            border-radius: 8px;
+            border-radius: 4px;
             overflow: hidden;
             background: #1a1a1a;
             width: 180px;
             flex-shrink: 0;
+            animation: slideUp 0.5s ease-out;
         }
         .movie-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: scale(1.08);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+        }
+        .title-font {
+            font-family: 'Bebas Neue', sans-serif;
+        }
+        .idle-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #141414;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .idle-screen.active {
+            display: flex;
+        }
+        .idle-movie-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .idle-movie {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+            transform: translateX(100%);
+            transition: transform 1.5s ease-in-out;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .idle-movie img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #1a1a1a;
+        }
+        .idle-movie.active {
+            transform: translateX(0);
+        }
+        .idle-movie.exiting {
+            transform: translateX(-100%);
+        }
+        .idle-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        .idle-movie-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        .idle-movie-info {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+        .idle-dismiss {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(229, 9, 20, 0.9);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 1001;
+            border-radius: 4px;
+        }
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 0 0 8px 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            margin-top: 4px;
+        }
+        .search-suggestions.active {
+            display: block;
+        }
+        .search-suggestion {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #333;
+            transition: background 0.2s;
+        }
+        .search-suggestion:hover {
+            background: #2a2a2a;
+        }
+        .search-suggestion:last-child {
+            border-bottom: none;
+        }
+        .search-suggestion-title {
+            color: white;
+            font-weight: 500;
+        }
+        .search-suggestion-info {
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        .movie-card:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
             z-index: 10;
         }
         .gradient-bg {
@@ -110,15 +260,26 @@
     </style>
 </head>
 <body class="bg-[#141414] min-h-screen">
-    <div class="container mx-auto px-4 md:px-12 py-4">
-        <header class="flex items-center justify-between mb-8 py-4">
-            <div class="flex items-center gap-3">
-                <span class="text-3xl md:text-4xl netflix-red font-extrabold tracking-tight">STREAMHUB</span>
-                <span class="text-xl md:text-2xl font-bold text-white hidden sm:block">Film & Sorozat Ajánló</span>
+    <div class="container mx-auto px-4 md:px-12 py-4 fade-in">
+        <header class="flex items-center justify-between mb-8 py-6 bg-gradient-to-b from-black/80 to-transparent">
+            <div class="flex items-center gap-4">
+                <span class="text-4xl md:text-5xl netflix-red title-font tracking-tight">Film Univerze</span>
+                <span class="text-base md:text-lg font-medium text-gray-400 hidden sm:block">Film & Sorozat Ajánló</span>
             </div>
         </header>
 
         <div id="movies-container"></div>
+        
+        <!-- Idle Screen Overlay -->
+        <div id="idle-screen" class="idle-screen">
+            <button class="idle-dismiss" onclick="dismissIdleScreen()">✕ Bezárás</button>
+            <div id="idle-movies-container"></div>
+            <div class="idle-content">
+                <h2 id="idle-movie-title" class="idle-movie-title title-font"></h2>
+                <p id="idle-movie-info" class="idle-movie-info"></p>
+                <p class="text-gray-400 text-sm">Kattints vagy mozgass az egeret a folytatáshoz</p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1211,17 +1372,36 @@
                      data-series="${isSeries}">
                     <div class="relative aspect-[2/3] rounded-lg overflow-hidden">
                         <img src="${imageUrl}" alt="${movie.title}" class="w-full h-full object-cover movie-poster">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                        <div class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 hover:opacity-100 transition-all duration-300"></div>
+                        
+                        <!-- Rating Badge (always visible on hover) -->
+                        <div class="absolute top-2 right-2 bg-red-600/90 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-bold shadow-lg">
                             ⭐ ${movie.rating}
                         </div>
-                        ${isFavorite ? '<div class="absolute top-2 left-2 text-red-500 text-xl">❤️</div>' : ''}
+                        
+                        <!-- Favorite Badge -->
+                        ${isFavorite ? '<div class="absolute top-2 left-2 bg-red-600/90 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-bold shadow-lg">❤️</div>' : ''}
+                        
+                        <!-- Age Rating Badge -->
+                        <div class="absolute top-2 left-2 ${isFavorite ? 'top-10 left-2' : ''} bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-bold shadow-lg">
+                            ${movie.age}+
+                        </div>
+                        
+                        <!-- Content on hover -->
                         <div class="absolute bottom-0 left-0 right-0 p-3 transform translate-y-full hover:translate-y-0 transition-transform duration-300">
-                            <h3 class="text-white font-bold text-sm mb-1 leading-tight">${movie.title}</h3>
+                            <h3 class="text-white font-bold text-sm mb-1 leading-tight drop-shadow-lg">${movie.title}</h3>
                             <div class="flex items-center gap-2 text-xs text-gray-300">
                                 <span>${movie.year}</span>
                                 <span class="text-gray-500">|</span>
                                 <span>${movie.age}+</span>
+                            </div>
+                            <div class="mt-2 flex gap-1">
+                                <button onclick="event.stopPropagation(); addToFavorites({title: '${movie.title}', year: ${movie.year}, age: ${movie.age}, rating: ${movie.rating}, category: '${movie.category || ''}'})" class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs font-bold transition-colors">
+                                    ❤️
+                                </button>
+                                <button onclick="event.stopPropagation(); showDetail({title: '${movie.title}', year: ${movie.year}, age: ${movie.age}, rating: ${movie.rating}, category: '${movie.category || ''}'})" class="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs font-bold transition-colors">
+                                    ℹ️
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1236,22 +1416,22 @@
                 return createMovieCard(movie, isSeries);
             }).join('');
             return `
-                <section class="mb-12">
-                    <h2 class="text-xl md:text-2xl font-bold text-white mb-4 flex items-center gap-3">
+                <section class="mb-16">
+                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-6 flex items-center gap-3 title-font tracking-wide">
                         ${categoryData.icon}
                         ${categoryName}
                     </h2>
                     <div class="relative">
-                        <button onclick="this.parentElement.querySelector('.movie-row').scrollBy({left: -500, behavior: 'smooth'})" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 text-white p-2 rounded-full hidden md:block">
+                        <button onclick="this.parentElement.querySelector('.movie-row').scrollBy({left: -500, behavior: 'smooth'})" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 text-white p-3 rounded-full hidden md:block transition-colors shadow-lg">
                             ‹
                         </button>
-                        <div class="movie-row flex overflow-x-auto gap-2 md:gap-4 pb-4 scrollbar-hide" style="scrollbar-width: none;">
+                        <div class="movie-row flex overflow-x-auto gap-3 md:gap-4 pb-4 scrollbar-hide" style="scrollbar-width: none;">
                             ${categoryData.movies.map(movie => {
                                 movie.category = categoryName;
                                 return createMovieCard(movie, isSeries);
                             }).join('')}
                         </div>
-                        <button onclick="this.parentElement.querySelector('.movie-row').scrollBy({left: 500, behavior: 'smooth'})" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 text-white p-2 rounded-full hidden md:block">
+                        <button onclick="this.parentElement.querySelector('.movie-row').scrollBy({left: 500, behavior: 'smooth'})" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 text-white p-3 rounded-full hidden md:block transition-colors shadow-lg">
                             ›
                         </button>
                     </div>
@@ -1319,6 +1499,47 @@
                     card.style.display = 'none';
                 }
             });
+            
+            // Show search suggestions
+            if (searchTerm.length >= 2) {
+                showSearchSuggestions(searchTerm);
+            } else {
+                hideSearchSuggestions();
+            }
+        }
+        
+        function showSearchSuggestions(searchTerm) {
+            const suggestionsContainer = document.getElementById('search-suggestions');
+            const allMovies = getAllMovies();
+            
+            const matches = allMovies.filter(movie => {
+                const title = removeAccents(movie.title.toLowerCase());
+                return title.includes(searchTerm);
+            }).slice(0, 5);
+            
+            if (matches.length > 0) {
+                suggestionsContainer.innerHTML = matches.map(movie => `
+                    <div class="search-suggestion" onclick="selectSuggestion('${movie.title}')">
+                        <div class="search-suggestion-title">${movie.title}</div>
+                        <div class="search-suggestion-info">${movie.year} | ⭐ ${movie.rating} | ${movie.age}+</div>
+                    </div>
+                `).join('');
+                suggestionsContainer.classList.add('active');
+            } else {
+                hideSearchSuggestions();
+            }
+        }
+        
+        function hideSearchSuggestions() {
+            const suggestionsContainer = document.getElementById('search-suggestions');
+            suggestionsContainer.classList.remove('active');
+        }
+        
+        function selectSuggestion(title) {
+            const searchInput = document.getElementById('search-input');
+            searchInput.value = title;
+            hideSearchSuggestions();
+            handleSearch({ target: searchInput });
         }
         
         let currentSort = 'default';
@@ -1411,11 +1632,11 @@
             const container = document.getElementById('movies-container');
             
             if (favorites.length === 0) {
-                container.innerHTML = '<p class="text-gray-400 text-center py-8">Még nincs kedvenced. Kattints a ❤️ ikonra a filmekhez adáshoz!</p>';
+                container.innerHTML = '<p class="text-gray-400 text-center py-8">Még nincs kedvenced. Kattints a ❤️ ikonra a filmekhez adáshoz!</p><button onclick="renderMovies()" class="mt-4 text-white hover:text-red-500 transition">← Vissza</button>';
                 return;
             }
             
-            let html = '<h2 class="text-xl md:text-2xl font-bold text-white mb-4">❤️ Saját lista</h2>';
+            let html = '<div class="flex items-center justify-between mb-4"><h2 class="text-xl md:text-2xl font-bold text-white">❤️ Saját lista</h2><button onclick="renderMovies()" class="text-white hover:text-red-500 transition text-lg">← Vissza</button></div>';
             html += '<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">';
             favorites.forEach(movie => {
                 html += createMovieCard(movie, false, true);
@@ -1487,146 +1708,6 @@
                 }
             }
             return related;
-        }
-
-        // Detail view modal
-        async function showDetail(movie) {
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4';
-            modal.onclick = (e) => {
-                if (e.target === modal) modal.remove();
-            };
-            
-            const isSeries = movie.category && movie.category.startsWith('SOROZATOK');
-            const franchise = detectFranchise(movie.title);
-            const relatedMovies = franchise ? getRelatedMovies(franchise, movie.title) : [];
-            const streamingAvailability = await getStreamingAvailability(movie.title, movie.year, isSeries);
-            
-            modal.innerHTML = `
-                <div class="bg-[#1a1a1a] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                    <div class="flex flex-col md:flex-row">
-                        <div class="md:w-1/3">
-                            <img id="modal-poster" src="${getPlaceholderImage(movie.title, movie.year)}" alt="${movie.title}" class="w-full rounded-t-lg md:rounded-l-lg md:rounded-tr-none">
-                        </div>
-                        <div class="md:w-2/3 p-6">
-                            <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-white text-2xl hover:text-red-500">&times;</button>
-                            <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">${movie.title}</h2>
-                            <div class="flex items-center gap-4 mb-4 text-gray-300">
-                                <span>📅 ${movie.year}</span>
-                                <span>🔞 ${movie.age}+</span>
-                                <span>⭐ ${movie.rating}</span>
-                            </div>
-                            <div class="flex gap-3 mb-6 flex-wrap">
-                                <button onclick="window.open('https://www.imdb.com/find?q=${encodeURIComponent(movie.title)}', '_blank')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center gap-2">
-                                    🎬 IMDb
-                                </button>
-                                <button onclick="addToFavorites({title: '${movie.title}', year: ${movie.year}, age: ${movie.age}, rating: ${movie.rating}})" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded flex items-center gap-2">
-                                    ❤️ Kedvenc
-                                </button>
-                            </div>
-                            ${streamingAvailability && (streamingAvailability.flatrate?.length > 0 || streamingAvailability.rent?.length > 0 || streamingAvailability.buy?.length > 0) ? `
-                                <div class="mb-6">
-                                    <h3 class="text-white font-bold mb-3">Elérhető platformokon:</h3>
-                                    ${streamingAvailability.flatrate && streamingAvailability.flatrate.length > 0 ? `
-                                        <div class="mb-3">
-                                            <p class="text-gray-400 text-sm mb-2">Streaming:</p>
-                                            <div class="flex gap-2 flex-wrap">
-                                                ${streamingAvailability.flatrate.map(provider => {
-                                                    const fallbackUrl = getPlatformSearchUrl(provider.provider_name, movie.title);
-                                                    const href = provider.link || fallbackUrl;
-                                                    return `<a href="${href}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition">${provider.provider_name}</a>`;
-                                                }).join('')}
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                    ${streamingAvailability.rent && streamingAvailability.rent.length > 0 ? `
-                                        <div class="mb-3">
-                                            <p class="text-gray-400 text-sm mb-2">Bérlés:</p>
-                                            <div class="flex gap-2 flex-wrap">
-                                                ${streamingAvailability.rent.map(provider => {
-                                                    const fallbackUrl = getPlatformSearchUrl(provider.provider_name, movie.title);
-                                                    const href = provider.link || fallbackUrl;
-                                                    return `<a href="${href}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition">${provider.provider_name}</a>`;
-                                                }).join('')}
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                    ${streamingAvailability.buy && streamingAvailability.buy.length > 0 ? `
-                                        <div>
-                                            <p class="text-gray-400 text-sm mb-2">Vásárlás:</p>
-                                            <div class="flex gap-2 flex-wrap">
-                                                ${streamingAvailability.buy.map(provider => {
-                                                    const fallbackUrl = getPlatformSearchUrl(provider.provider_name, movie.title);
-                                                    const href = provider.link || fallbackUrl;
-                                                    return `<a href="${href}" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition">${provider.provider_name}</a>`;
-                                                }).join('')}
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            ` : ''}
-                            <div class="mb-6">
-                                <p class="text-gray-400 mb-3">Keresés a platformokon:</p>
-                                <div class="flex gap-2 flex-wrap">
-                                    <button onclick="window.open('https://www.netflix.com/search?q=${encodeURIComponent(movie.title)}', '_blank')" class="bg-red-700 hover:bg-red-800 text-white px-3 py-1 rounded text-sm">
-                                        Netflix
-                                    </button>
-                                    <button onclick="window.open('https://www.hbomax.com/search?q=${encodeURIComponent(movie.title)}', '_blank')" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm">
-                                        HBO Max
-                                    </button>
-                                    <button onclick="window.open('https://www.disneyplus.com/search?q=${encodeURIComponent(movie.title)}', '_blank')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
-                                        Disney+
-                                    </button>
-                                    <button onclick="window.open('https://www.primevideo.com/search?q=${encodeURIComponent(movie.title)}', '_blank')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
-                                        Prime
-                                    </button>
-                                    <button onclick="const videaUrl = 'https://www.google.com/search?q=' + encodeURIComponent('${movie.title}' + ' videa site:videa.hu'); console.log('Videa URL:', videaUrl); window.open(videaUrl, '_blank');" class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-sm">
-                                        🎥 Videa
-                                    </button>
-                                </div>
-                            </div>
-                            ${isSeries ? `
-                                <div id="season-selector" class="mb-4">
-                                    <h3 class="text-white font-bold mb-2">Évadok:</h3>
-                                    <select id="season-select" onchange="loadSeasonEpisodes('${movie.title}', this.value)" class="bg-gray-700 text-white px-4 py-2 rounded w-full">
-                                        <option value="">Válassz évadot...</option>
-                                    </select>
-                                </div>
-                                <div id="episodes-container" class="mt-4"></div>
-                            ` : ''}
-                            ${franchise && relatedMovies.length > 0 ? `
-                                <div class="mt-4">
-                                    <h3 class="text-white font-bold mb-2">${franchise} franchise részei:</h3>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        ${relatedMovies.slice(0, 6).map(related => `
-                                            <div onclick="showDetail({title: '${related.title}', year: ${related.year}, age: ${related.age}, rating: ${related.rating}, category: '${related.category || ''}'})" 
-                                                 class="bg-gray-800 p-2 rounded cursor-pointer hover:bg-gray-700 transition">
-                                                <p class="text-white text-sm font-medium">${related.title}</p>
-                                                <p class="text-gray-400 text-xs">${related.year}</p>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            <div class="text-gray-400">
-                                <p class="mb-2"><strong>Kategória:</strong> ${movie.category || 'Nincs megadva'}</p>
-                                <p class="mb-2"><strong>Értékelés:</strong> ${movie.rating}/10</p>
-                                <p><strong>Korhatár:</strong> ${movie.age}+ év</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            // Load real poster for modal
-            loadPosterForModal(movie);
-            
-            // If it's a series, load seasons
-            if (isSeries) {
-                loadSeriesSeasons(movie.title);
-            }
         }
         
         async function loadSeriesSeasons(title) {
@@ -1734,6 +1815,121 @@
             }
         }
         
+        // Detail view modal
+        async function showDetail(movie) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 fade-in';
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+            
+            const isSeries = movie.category && movie.category.startsWith('SOROZATOK');
+            const franchise = detectFranchise(movie.title);
+            const relatedMovies = franchise ? getRelatedMovies(franchise, movie.title) : [];
+            const streamingAvailability = await getStreamingAvailability(movie.title, movie.year, isSeries);
+            
+            modal.innerHTML = `
+                <div class="bg-[#1a1a1a] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-800 shadow-2xl">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/3 relative">
+                            <img id="modal-poster" src="${getPlaceholderImage(movie.title, movie.year)}" alt="${movie.title}" class="w-full rounded-t-lg md:rounded-l-lg md:rounded-tr-none">
+                            <div class="absolute top-2 left-2 bg-red-600/90 backdrop-blur-sm text-white px-3 py-1 rounded text-sm font-bold shadow-lg">
+                                ⭐ ${movie.rating}
+                            </div>
+                        </div>
+                        <div class="md:w-2/3 p-6">
+                            <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-white text-2xl hover:text-red-500 transition-colors z-10">&times;</button>
+                            
+                            <h2 class="text-2xl md:text-3xl font-bold text-white mb-2 title-font tracking-wide">${movie.title}</h2>
+                            
+                            <div class="flex items-center gap-4 mb-4 text-gray-300">
+                                <span class="bg-gray-800 px-2 py-1 rounded text-sm">📅 ${movie.year}</span>
+                                <span class="bg-gray-800 px-2 py-1 rounded text-sm">🔞 ${movie.age}+</span>
+                                <span class="bg-gray-800 px-2 py-1 rounded text-sm">⭐ ${movie.rating}</span>
+                            </div>
+                            
+                            <div class="flex gap-3 mb-6 flex-wrap">
+                                <button onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' trailer')}', '_blank')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center gap-2 transition-colors shadow-lg">
+                                    🎬 Előzetes
+                                </button>
+                                <button onclick="window.open('https://www.imdb.com/find?q=${encodeURIComponent(movie.title)}', '_blank')" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded flex items-center gap-2 transition-colors shadow-lg">
+                                    IMDb
+                                </button>
+                                <button onclick="addToFavorites({title: '${movie.title}', year: ${movie.year}, age: ${movie.age}, rating: ${movie.rating}, category: '${movie.category || ''}'})" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded flex items-center gap-2 transition-colors shadow-lg">
+                                    ❤️ Kedvenc
+                                </button>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h3 class="text-white font-bold mb-2 text-lg">Rövid leírás</h3>
+                                <p class="text-gray-400 text-sm leading-relaxed">
+                                    Fedezd fel ezt a ${movie.year}-es ${movie.age}+ korhatáros filmet, amely ${movie.rating}-os értékelést kapott. 
+                                    ${franchise ? `A(z) ${franchise} franchise része.` : ''}
+                                </p>
+                            </div>
+                            
+                            ${streamingAvailability && (streamingAvailability.flatrate?.length > 0 || streamingAvailability.rent?.length > 0 || streamingAvailability.buy?.length > 0) ? `
+                                <div class="mb-6">
+                                    <h3 class="text-white font-bold mb-3 text-lg">Elérhető platformokon:</h3>
+                                    ${streamingAvailability.flatrate && streamingAvailability.flatrate.length > 0 ? `
+                                        <div class="mb-3">
+                                            <p class="text-gray-400 text-sm mb-2">📺 Streaming:</p>
+                                            <div class="flex gap-2 flex-wrap">
+                                                ${streamingAvailability.flatrate.map(provider => {
+                                                    const fallbackUrl = getPlatformSearchUrl(provider.provider_name, movie.title);
+                                                    const href = provider.link || fallbackUrl;
+                                                    return `<a href="${href}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition shadow">${provider.provider_name}</a>`;
+                                                }).join('')}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                    ${streamingAvailability.rent && streamingAvailability.rent.length > 0 ? `
+                                        <div class="mb-3">
+                                            <p class="text-gray-400 text-sm mb-2">💰 Bérlés:</p>
+                                            <div class="flex gap-2 flex-wrap">
+                                                ${streamingAvailability.rent.map(provider => {
+                                                    const fallbackUrl = getPlatformSearchUrl(provider.provider_name, movie.title);
+                                                    const href = provider.link || fallbackUrl;
+                                                    return `<a href="${href}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition shadow">${provider.provider_name}</a>`;
+                                                }).join('')}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                    ${streamingAvailability.buy && streamingAvailability.buy.length > 0 ? `
+                                        <div class="mb-3">
+                                            <p class="text-gray-400 text-sm mb-2">🛒 Vásárlás:</p>
+                                            <div class="flex gap-2 flex-wrap">
+                                                ${streamingAvailability.buy.map(provider => {
+                                                    const fallbackUrl = getPlatformSearchUrl(provider.provider_name, movie.title);
+                                                    const href = provider.link || fallbackUrl;
+                                                    return `<a href="${href}" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition shadow">${provider.provider_name}</a>`;
+                                                }).join('')}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            ` : ''}
+                            
+                            ${relatedMovies.length > 0 ? `
+                                <div class="mb-6">
+                                    <h3 class="text-white font-bold mb-3 text-lg">🔗 Kapcsolódó filmek:</h3>
+                                    <div class="flex gap-2 flex-wrap">
+                                        ${relatedMovies.slice(0, 5).map(m => `<button onclick="showDetail({title: '${m.title}', year: ${m.year}, age: ${m.age}, rating: ${m.rating}, category: '${m.category || ''}'})" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition border border-gray-700 hover:border-red-600">${m.title}</button>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Load poster for modal
+            const poster = document.getElementById('modal-poster');
+            loadPosterForModal(movie);
+        }
+        
         async function loadPosterForModal(movie) {
             const posterImg = document.getElementById('modal-poster');
             if (posterImg) {
@@ -1776,10 +1972,11 @@
         
         function createTopSection(title, movies, icon) {
             const moviesHtml = movies.map(movie => createMovieCard(movie, false)).join('');
+            const badge = icon === 'NEW' ? '<span class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold ml-2">ÚJ</span>' : icon;
             return `
                 <section class="mb-8">
                     <h2 class="text-2xl md:text-3xl font-bold text-white mb-4 flex items-center gap-3">
-                        ${icon}
+                        ${badge}
                         ${title}
                     </h2>
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
@@ -1795,14 +1992,15 @@
             
             // Search and filters section
             container.innerHTML += `
-                <div class="mb-8 p-6 bg-[#1a1a1a] rounded-lg">
+                <div class="mb-8 p-6 bg-[#1a1a1a] rounded-lg border border-gray-800">
                     <div class="flex flex-wrap items-center gap-4">
                         <div class="relative flex-1 min-w-[200px]">
                             <input type="text" id="search-input" placeholder="Keresés..." 
-                                   class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 text-lg"
-                                   oninput="handleSearch(event)">
+                                   class="w-full bg-gray-900 text-white px-4 py-3 rounded border border-gray-700 focus:outline-none focus:border-red-600 text-lg"
+                                   oninput="handleSearch(event)" autocomplete="off">
+                            <div id="search-suggestions" class="search-suggestions"></div>
                         </div>
-                        <select id="genre-filter" onchange="applyFilters()" class="bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600">
+                        <select id="genre-filter" onchange="applyFilters()" class="bg-gray-900 text-white px-4 py-3 rounded border border-gray-700 focus:outline-none focus:border-red-600">
                             <option value="all">Műfaj</option>
                             <option value="action">Akció</option>
                             <option value="drama">Dráma</option>
@@ -1811,7 +2009,7 @@
                             <option value="horror">Horror</option>
                             <option value="romance">Romantika</option>
                         </select>
-                        <select id="year-filter" onchange="applyFilters()" class="bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600">
+                        <select id="year-filter" onchange="applyFilters()" class="bg-gray-900 text-white px-4 py-3 rounded border border-gray-700 focus:outline-none focus:border-red-600">
                             <option value="all">Év</option>
                             <option value="2020s">2020-as</option>
                             <option value="2010s">2010-es</option>
@@ -1820,13 +2018,13 @@
                             <option value="1980s">1980-as</option>
                             <option value="older">Régebbi</option>
                         </select>
-                        <select id="sort-select" onchange="applySort()" class="bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600">
+                        <select id="sort-select" onchange="applySort()" class="bg-gray-900 text-white px-4 py-3 rounded border border-gray-700 focus:outline-none focus:border-red-600">
                             <option value="default">Rendezés</option>
                             <option value="rating">Értékelés</option>
                             <option value="year">Év</option>
                             <option value="alphabetical">Ábécé</option>
                         </select>
-                        <button onclick="toggleFavorites()" class="text-white hover:text-red-500 transition px-4 py-3 rounded-lg bg-gray-800">
+                        <button onclick="toggleFavorites()" class="text-white hover:text-red-500 transition px-4 py-3 rounded border border-gray-700 bg-gray-900 hover:border-red-600">
                             ❤️ Saját lista
                         </button>
                     </div>
@@ -1843,9 +2041,13 @@
             const topMovies = getTopMovies();
             container.innerHTML += createTopSection('Top 10 Népszerű', topMovies, '');
             
-            // New releases
+            // New releases with NEW badges
             const newReleases = getNewReleases();
-            container.innerHTML += createTopSection('Új Megjelenések', newReleases, '');
+            container.innerHTML += createTopSection('Új Megjelenések', newReleases, 'NEW');
+            
+            // Top Rated with rating badges
+            const topRated = getTopMovies();
+            container.innerHTML += createTopSection('Top Értékelésű', topRated, '⭐');
             
             // All categories
             for (const [categoryName, categoryData] of Object.entries(movieData)) {
@@ -1854,6 +2056,112 @@
             
             setupLazyLoading();
         }
+
+        // Idle Screen Functionality
+        let idleTimer;
+        let idleMovieTimer;
+        let isIdleScreenActive = false;
+        let idleMovies = [];
+        let currentIdleMovieIndex = 0;
+        const IDLE_TIMEOUT = 30000; // 30 seconds
+        const MOVIE_CYCLE_INTERVAL = 5000; // 5 seconds
+
+        // Get all movies for idle screen
+        function getAllMovies() {
+            const allMovies = [];
+            for (const [categoryName, categoryData] of Object.entries(movieData)) {
+                categoryData.movies.forEach(movie => {
+                    allMovies.push(movie);
+                });
+            }
+            return allMovies;
+        }
+
+        // Reset idle timer on user activity
+        function resetIdleTimer() {
+            clearTimeout(idleTimer);
+            clearTimeout(idleMovieTimer);
+            
+            if (isIdleScreenActive) {
+                dismissIdleScreen();
+            }
+            
+            idleTimer = setTimeout(showIdleScreen, IDLE_TIMEOUT);
+        }
+
+        // Show idle screen
+        function showIdleScreen() {
+            isIdleScreenActive = true;
+            idleMovies = getAllMovies();
+            currentIdleMovieIndex = 0;
+            
+            const idleScreen = document.getElementById('idle-screen');
+            idleScreen.classList.add('active');
+            
+            showIdleMovie();
+            idleMovieTimer = setInterval(cycleIdleMovie, MOVIE_CYCLE_INTERVAL);
+        }
+
+        // Show current idle movie
+        async function showIdleMovie() {
+            if (idleMovies.length === 0) return;
+            
+            const movie = idleMovies[currentIdleMovieIndex];
+            const titleEl = document.getElementById('idle-movie-title');
+            const infoEl = document.getElementById('idle-movie-info');
+            const container = document.getElementById('idle-movies-container');
+            
+            titleEl.textContent = movie.title;
+            infoEl.textContent = `${movie.year} | ⭐ ${movie.rating} | ${movie.age}+`;
+            
+            // Get poster image from TMDB
+            const posterUrl = await getPosterImage(movie.title, movie.year, false);
+            
+            // Create movie poster div
+            const newMoviePoster = document.createElement('div');
+            newMoviePoster.className = 'idle-movie';
+            newMoviePoster.innerHTML = `<img src="${posterUrl}" alt="${movie.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100%25\' height=\'100%25\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%231a1a1a\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-family=\'Arial\' font-size=\'60\' fill=\'%23E50914\' text-anchor=\'middle\' dy=\'.3em\'%3E${movie.title.charAt(0).toUpperCase()}%3C/text%3E%3C/svg%3E'">`;
+            
+            // Remove old posters
+            const oldPosters = container.querySelectorAll('.idle-movie');
+            oldPosters.forEach(poster => {
+                poster.classList.add('exiting');
+                setTimeout(() => poster.remove(), 1500);
+            });
+            
+            // Add new poster and activate it
+            container.appendChild(newMoviePoster);
+            setTimeout(() => newMoviePoster.classList.add('active'), 50);
+        }
+
+        // Cycle to next movie
+        function cycleIdleMovie() {
+            if (!isIdleScreenActive) return;
+            
+            currentIdleMovieIndex = (currentIdleMovieIndex + 1) % idleMovies.length;
+            showIdleMovie();
+        }
+
+        // Dismiss idle screen
+        function dismissIdleScreen() {
+            isIdleScreenActive = false;
+            clearTimeout(idleMovieTimer);
+            
+            const idleScreen = document.getElementById('idle-screen');
+            idleScreen.classList.remove('active');
+            
+            resetIdleTimer();
+        }
+
+        // Track user activity
+        document.addEventListener('mousemove', resetIdleTimer);
+        document.addEventListener('keypress', resetIdleTimer);
+        document.addEventListener('scroll', resetIdleTimer);
+        document.addEventListener('click', resetIdleTimer);
+        document.getElementById('idle-screen').addEventListener('click', dismissIdleScreen);
+
+        // Start idle timer on page load
+        resetIdleTimer();
 
         renderMovies();
     </script>
