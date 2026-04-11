@@ -171,6 +171,31 @@
             font-size: 0.85rem;
             margin-top: 4px;
         }
+        .movie-poster {
+            background: #2a2a2a;
+            min-height: 270px;
+        }
+        .movie-poster.loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s ease-in-out infinite;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .loading-skeleton {
+            width: 180px;
+            height: 270px;
+            border-radius: 4px;
+        }
         .movie-card:hover {
             transform: scale(1.08);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
@@ -257,6 +282,9 @@
         .category-gradient-series-historical {
             background: linear-gradient(135deg, #E50914 0%, #b81d24 100%);
         }
+        .category-gradient-marvel {
+            background: linear-gradient(135deg, #EC1D24 0%, #b91c1c 100%);
+        }
     </style>
 </head>
 <body class="bg-[#141414] min-h-screen">
@@ -284,6 +312,68 @@
 
     <script>
         const movieData = {
+            "Marvel Moziverzum": {
+                icon: "🦸",
+                gradient: "category-gradient-marvel",
+                movies: [
+                    { title: "Iron Man (Vasember)", year: 2008, age: 12, rating: 7.9 },
+                    { title: "The Incredible Hulk (A hihetetlen Hulk)", year: 2008, age: 12, rating: 6.7 },
+                    { title: "Iron Man 2 (Vasember 2)", year: 2010, age: 12, rating: 7.0 },
+                    { title: "Thor", year: 2011, age: 12, rating: 7.0 },
+                    { title: "Captain America: The First Avenger (Amerika Kapitány: Az első bosszúálló)", year: 2011, age: 12, rating: 7.1 },
+                    { title: "The Avengers (Bosszúállók)", year: 2012, age: 12, rating: 8.0 },
+                    { title: "Iron Man 3 (Vasember 3)", year: 2013, age: 12, rating: 7.2 },
+                    { title: "Thor: The Dark World (Thor: Sötét világ)", year: 2013, age: 12, rating: 6.8 },
+                    { title: "Captain America: The Winter Soldier (A tél katonája)", year: 2014, age: 12, rating: 7.8 },
+                    { title: "Guardians of the Galaxy (A galaxis őrzői)", year: 2014, age: 12, rating: 8.0 },
+                    { title: "Avengers: Age of Ultron (Bosszúállók: Ultron kora)", year: 2015, age: 12, rating: 7.3 },
+                    { title: "Ant-Man (A Hangya)", year: 2015, age: 12, rating: 7.3 },
+                    { title: "Captain America: Civil War (Polgárháború)", year: 2016, age: 12, rating: 7.8 },
+                    { title: "Doctor Strange", year: 2016, age: 12, rating: 7.5 },
+                    { title: "Guardians of the Galaxy Vol. 2", year: 2017, age: 12, rating: 7.7 },
+                    { title: "Spider-Man: Homecoming (Pókember: Hazatérés)", year: 2017, age: 12, rating: 7.4 },
+                    { title: "Thor: Ragnarok", year: 2017, age: 12, rating: 7.9 },
+                    { title: "Black Panther (Fekete Párduc)", year: 2018, age: 12, rating: 7.3 },
+                    { title: "Avengers: Infinity War (Végtelen háború)", year: 2018, age: 12, rating: 8.4 },
+                    { title: "Ant-Man and the Wasp (A Hangya és a Darázs)", year: 2018, age: 12, rating: 7.3 },
+                    { title: "Captain Marvel (Marvel Kapitány)", year: 2019, age: 12, rating: 6.9 },
+                    { title: "Avengers: Endgame (Bosszúállók: Végjáték)", year: 2019, age: 12, rating: 8.4 },
+                    { title: "Spider-Man: Far From Home (Pókember: Idegenben)", year: 2019, age: 12, rating: 7.4 },
+                    { title: "Black Widow (Fekete Özvegy)", year: 2021, age: 16, rating: 7.3 },
+                    { title: "Shang-Chi és a tíz gyűrű legendája", year: 2021, age: 12, rating: 7.4 },
+                    { title: "Eternals (Örökkévalók)", year: 2021, age: 12, rating: 7.2 },
+                    { title: "Spider-Man: No Way Home (Pókember: Nincs hazaút)", year: 2021, age: 12, rating: 8.2 },
+                    { title: "Doctor Strange in the Multiverse of Madness", year: 2022, age: 16, rating: 6.9 },
+                    { title: "Thor: Love and Thunder", year: 2022, age: 12, rating: 6.2 },
+                    { title: "Black Panther: Wakanda Forever", year: 2022, age: 12, rating: 6.7 },
+                    { title: "Ant-Man and the Wasp: Quantumania (A Hangya és a Darázs: Kvantumánia)", year: 2023, age: 12, rating: 6.0 },
+                    { title: "Guardians of the Galaxy Vol. 3", year: 2023, age: 12, rating: 8.0 },
+                    { title: "The Marvels", year: 2023, age: 12, rating: 5.6 },
+                    { title: "Deadpool & Wolverine (Deadpool & Rozsomák)", year: 2024, age: 18, rating: 7.8 },
+                    { title: "Spider-Man (2002)", year: 2002, age: 12, rating: 7.3 },
+                    { title: "Spider-Man 2 (2004)", year: 2004, age: 12, rating: 8.0 },
+                    { title: "Spider-Man 3 (2007)", year: 2007, age: 12, rating: 6.2 },
+                    { title: "The Amazing Spider-Man (2012)", year: 2012, age: 12, rating: 7.0 },
+                    { title: "The Amazing Spider-Man 2 (2014)", year: 2014, age: 12, rating: 6.6 },
+                    { title: "X-Men", year: 2000, age: 12, rating: 7.3 },
+                    { title: "X2", year: 2003, age: 12, rating: 7.5 },
+                    { title: "X-Men: The Last Stand", year: 2006, age: 12, rating: 6.7 },
+                    { title: "X-Men: First Class", year: 2011, age: 12, rating: 7.8 },
+                    { title: "X-Men: Days of Future Past", year: 2014, age: 12, rating: 8.0 },
+                    { title: "X-Men: Apocalypse", year: 2016, age: 12, rating: 6.9 },
+                    { title: "X-Men: Dark Phoenix", year: 2019, age: 12, rating: 6.0 },
+                    { title: "X-Men Origins: Wolverine", year: 2009, age: 16, rating: 6.4 },
+                    { title: "The Wolverine", year: 2013, age: 16, rating: 6.7 },
+                    { title: "Logan", year: 2017, age: 18, rating: 8.1 },
+                    { title: "Deadpool", year: 2016, age: 18, rating: 7.6 },
+                    { title: "Deadpool 2", year: 2018, age: 18, rating: 7.4 },
+                    { title: "Captain America: Brave New World", year: 2025, age: 12, rating: 7.2 },
+                    { title: "Thunderbolts*", year: 2025, age: 16, rating: 6.8 },
+                    { title: "The Fantastic Four: First Steps", year: 2025, age: 12, rating: 7.2 },
+                    { title: "Spider-Man: Brand New Day", year: 2026, age: 12, rating: 7.8 },
+                    { title: "Avengers: Doomsday", year: 2026, age: 12, rating: 8.2 }
+                ]
+            },
             "Dráma és Klasszikusok": {
                 icon: "🎭",
                 gradient: "category-gradient-drama",
@@ -307,7 +397,47 @@
                     { title: "Gran Torino", year: 2008, age: 16, rating: 8.2 },
                     { title: "Élősködők (Parasite)", year: 2019, age: 16, rating: 8.6 },
                     { title: "Joker", year: 2019, age: 18, rating: 8.4 },
-                    { title: "Oppenheimer", year: 2023, age: 16, rating: 8.5 }
+                    { title: "Oppenheimer", year: 2023, age: 16, rating: 8.5 },
+                    { title: "Nomadland", year: 2020, age: 12, rating: 7.3 },
+                    { title: "The Father", year: 2020, age: 12, rating: 8.2 },
+                    { title: "Another Round", year: 2020, age: 16, rating: 7.7 },
+                    { title: "The Trial of the Chicago 7", year: 2020, age: 12, rating: 7.7 },
+                    { title: "Minari", year: 2020, age: 12, rating: 7.4 },
+                    { title: "Sound of Metal", year: 2020, age: 16, rating: 7.7 },
+                    { title: "Pieces of a Woman", year: 2020, age: 18, rating: 7.0 },
+                    { title: "Mank", year: 2020, age: 16, rating: 6.8 },
+                    { title: "Ma Rainey's Black Bottom", year: 2020, age: 16, rating: 6.9 },
+                    { title: "I'm Thinking of Ending Things", year: 2020, age: 18, rating: 6.6 },
+                    { title: "CODA", year: 2021, age: 12, rating: 8.0 },
+                    { title: "The Power of the Dog", year: 2021, age: 16, rating: 6.8 },
+                    { title: "Belfast", year: 2021, age: 12, rating: 7.3 },
+                    { title: "The Last Duel", year: 2021, age: 16, rating: 7.4 },
+                    { title: "House of Gucci", year: 2021, age: 16, rating: 6.6 },
+                    { title: "Drive My Car", year: 2021, age: 16, rating: 7.5 },
+                    { title: "King Richard", year: 2021, age: 12, rating: 7.5 },
+                    { title: "Spencer", year: 2021, age: 16, rating: 6.6 },
+                    { title: "Titane", year: 2021, age: 18, rating: 6.5 },
+                    { title: "The Banshees of Inisherin", year: 2022, age: 16, rating: 7.7 },
+                    { title: "The Whale", year: 2022, age: 16, rating: 7.7 },
+                    { title: "The Fabelmans", year: 2022, age: 12, rating: 7.5 },
+                    { title: "Babylon", year: 2022, age: 18, rating: 6.9 },
+                    { title: "Tár", year: 2022, age: 16, rating: 7.4 },
+                    { title: "Thirteen Lives", year: 2022, age: 12, rating: 7.8 },
+                    { title: "Bones and All", year: 2022, age: 18, rating: 6.8 },
+                    { title: "Poor Things", year: 2023, age: 18, rating: 7.9 },
+                    { title: "Killers of the Flower Moon", year: 2023, age: 16, rating: 7.6 },
+                    { title: "The Zone of Interest", year: 2023, age: 18, rating: 7.4 },
+                    { title: "Anatomy of a Fall", year: 2023, age: 16, rating: 7.7 },
+                    { title: "Past Lives", year: 2023, age: 16, rating: 7.8 },
+                    { title: "The Holdovers", year: 2023, age: 16, rating: 7.9 },
+                    { title: "American Fiction", year: 2023, age: 16, rating: 7.5 },
+                    { title: "Iron Claw", year: 2023, age: 16, rating: 7.7 },
+                    { title: "May December", year: 2023, age: 18, rating: 6.8 },
+                    { title: "Priscilla", year: 2023, age: 16, rating: 6.6 },
+                    { title: "Maestro", year: 2023, age: 16, rating: 6.5 },
+                    { title: "Society of the Snow", year: 2023, age: 16, rating: 7.8 },
+                    { title: "Ferrari", year: 2023, age: 16, rating: 6.4 },
+                    { title: "Napoleon", year: 2023, age: 16, rating: 6.4 }
                 ]
             },
             "Sci-fi és Fantasy": {
@@ -330,7 +460,29 @@
                     { title: "Dűne (2021)", year: 2021, age: 12, rating: 8.0 },
                     { title: "Ex Machina", year: 2014, age: 16, rating: 7.7 },
                     { title: "Érkezés (Arrival)", year: 2016, age: 12, rating: 7.9 },
-                    { title: "Az ember gyermeke", year: 2006, age: 16, rating: 8.0 }
+                    { title: "Az ember gyermeke", year: 2006, age: 16, rating: 8.0 },
+                    { title: "Tenet", year: 2020, age: 12, rating: 7.3 },
+                    { title: "The Midnight Sky", year: 2020, age: 12, rating: 5.6 },
+                    { title: "Project Power", year: 2020, age: 16, rating: 6.0 },
+                    { title: "Dune: Part Two", year: 2024, age: 12, rating: 8.6 },
+                    { title: "The Tomorrow War", year: 2021, age: 16, rating: 6.6 },
+                    { title: "The Green Knight", year: 2021, age: 16, rating: 6.6 },
+                    { title: "Free Guy", year: 2021, age: 12, rating: 7.1 },
+                    { title: "Godzilla vs. Kong", year: 2021, age: 12, rating: 6.3 },
+                    { title: "Avatar: The Way of Water", year: 2022, age: 12, rating: 7.6 },
+                    { title: "Everything Everywhere All at Once", year: 2022, age: 18, rating: 7.8 },
+                    { title: "Prey", year: 2022, age: 16, rating: 7.1 },
+                    { title: "Godzilla Minus One", year: 2023, age: 12, rating: 7.9 },
+                    { title: "Spider-Man: Across the Spider-Verse", year: 2023, age: 12, rating: 8.6 },
+                    { title: "The Covenant", year: 2023, age: 18, rating: 7.5 },
+                    { title: "Kingdom of the Planet of the Apes", year: 2024, age: 12, rating: 7.0 },
+                    { title: "Alien: Romulus", year: 2024, age: 18, rating: 7.2 },
+                    { title: "Furiosa: A Mad Max Saga", year: 2024, age: 16, rating: 7.6 },
+                    { title: "Mickey 17", year: 2025, age: 16, rating: 8.0 },
+                    { title: "The Fantastic Four: First Steps", year: 2025, age: 12, rating: 7.2 },
+                    { title: "F1", year: 2025, age: 12, rating: 7.4 },
+                    { title: "Jurassic World Rebirth", year: 2025, age: 12, rating: 6.5 },
+                    { title: "Star Wars: New Jedi Order", year: 2026, age: 12, rating: 7.0 }
                 ]
             },
             "Akció és Krimi": {
@@ -697,6 +849,62 @@
                     { title: "Senki (Nobody)", year: 2021, age: 18, rating: 7.4 },
                     { title: "A gyilkos járat (Bullet Train)", year: 2022, age: 18, rating: 7.3 },
                     { title: "Úriemberek (The Gentlemen)", year: 2019, age: 18, rating: 7.8 },
+                    { title: "The Gentlemen", year: 2020, age: 18, rating: 7.8 },
+                    { title: "Extraction", year: 2020, age: 18, rating: 6.8 },
+                    { title: "The Hunt", year: 2020, age: 18, rating: 6.5 },
+                    { title: "The Old Guard", year: 2020, age: 16, rating: 6.7 },
+                    { title: "The Devil All the Time", year: 2020, age: 18, rating: 7.1 },
+                    { title: "Bad Boys for Life", year: 2020, age: 16, rating: 6.6 },
+                    { title: "Birds of Prey", year: 2020, age: 16, rating: 6.0 },
+                    { title: "Wonder Woman 1984", year: 2020, age: 12, rating: 5.4 },
+                    { title: "Greyhound", year: 2020, age: 16, rating: 7.0 },
+                    { title: "Enola Holmes", year: 2020, age: 12, rating: 6.6 },
+                    { title: "Da 5 Bloods", year: 2020, age: 18, rating: 6.7 },
+                    { title: "News of the World", year: 2020, age: 12, rating: 6.8 },
+                    { title: "No Time to Die", year: 2021, age: 12, rating: 7.3 },
+                    { title: "The Suicide Squad", year: 2021, age: 16, rating: 7.2 },
+                    { title: "Red Notice", year: 2021, age: 12, rating: 6.3 },
+                    { title: "Jungle Cruise", year: 2021, age: 12, rating: 6.6 },
+                    { title: "Old", year: 2021, age: 16, rating: 5.8 },
+                    { title: "Mortal Kombat", year: 2021, age: 18, rating: 6.0 },
+                    { title: "F9: The Fast Saga", year: 2021, age: 16, rating: 5.2 },
+                    { title: "The Batman", year: 2022, age: 16, rating: 7.8 },
+                    { title: "Northman", year: 2022, age: 18, rating: 7.0 },
+                    { title: "The Gray Man", year: 2022, age: 16, rating: 6.5 },
+                    { title: "Uncharted", year: 2022, age: 12, rating: 6.3 },
+                    { title: "Black Adam", year: 2022, age: 12, rating: 6.2 },
+                    { title: "Morbius", year: 2022, age: 12, rating: 5.2 },
+                    { title: "The Unbearable Weight of Massive Talent", year: 2022, age: 16, rating: 7.0 },
+                    { title: "John Wick: Chapter 4", year: 2023, age: 18, rating: 7.7 },
+                    { title: "Mission: Impossible – Dead Reckoning", year: 2023, age: 16, rating: 7.7 },
+                    { title: "Indiana Jones and the Dial of Destiny", year: 2023, age: 12, rating: 6.6 },
+                    { title: "The Killer", year: 2023, age: 18, rating: 6.7 },
+                    { title: "Dungeons & Dragons: Honor Among Thieves", year: 2023, age: 12, rating: 7.2 },
+                    { title: "Saltburn", year: 2023, age: 18, rating: 7.0 },
+                    { title: "Beau Is Afraid", year: 2023, age: 18, rating: 6.7 },
+                    { title: "Nyad", year: 2023, age: 12, rating: 7.0 },
+                    { title: "Civil War", year: 2024, age: 16, rating: 7.0 },
+                    { title: "Challengers", year: 2024, age: 16, rating: 7.2 },
+                    { title: "Bad Boys: Ride or Die", year: 2024, age: 16, rating: 6.6 },
+                    { title: "Monkey Man", year: 2024, age: 18, rating: 6.9 },
+                    { title: "The Fall Guy", year: 2024, age: 12, rating: 6.9 },
+                    { title: "X-Men", year: 2000, age: 12, rating: 7.3 },
+                    { title: "X2", year: 2003, age: 12, rating: 7.5 },
+                    { title: "X-Men: The Last Stand", year: 2006, age: 12, rating: 6.7 },
+                    { title: "X-Men: First Class", year: 2011, age: 12, rating: 7.8 },
+                    { title: "X-Men: Days of Future Past", year: 2014, age: 12, rating: 8.0 },
+                    { title: "X-Men: Apocalypse", year: 2016, age: 12, rating: 6.9 },
+                    { title: "X-Men: Dark Phoenix", year: 2019, age: 12, rating: 6.0 },
+                    { title: "X-Men Origins: Wolverine", year: 2009, age: 16, rating: 6.4 },
+                    { title: "The Wolverine", year: 2013, age: 16, rating: 6.7 },
+                    { title: "Logan", year: 2017, age: 18, rating: 8.1 },
+                    { title: "Deadpool", year: 2016, age: 18, rating: 7.6 },
+                    { title: "Deadpool 2", year: 2018, age: 18, rating: 7.4 },
+                    { title: "Spider-Man (2002)", year: 2002, age: 12, rating: 7.3 },
+                    { title: "Spider-Man 2 (2004)", year: 2004, age: 12, rating: 8.0 },
+                    { title: "Spider-Man 3 (2007)", year: 2007, age: 12, rating: 6.2 },
+                    { title: "The Amazing Spider-Man (2012)", year: 2012, age: 12, rating: 7.0 },
+                    { title: "The Amazing Spider-Man 2 (2014)", year: 2014, age: 12, rating: 6.6 },
                     { title: "Egy hulla a hűtőben", year: 1998, age: 16, rating: 8.2 },
                     { title: "Fargo", year: 1996, age: 18, rating: 8.1 },
                     { title: "Arizonai ördögfióka", year: 1987, age: 18, rating: 7.3 },
@@ -799,6 +1007,41 @@
                     { title: "Baby Driver – Nyomd el, puha!", year: 2017, age: 16, rating: 7.6 },
                     { title: "A nevem Dolemite", year: 2019, age: 18, rating: 7.2 },
                     { title: "Palm Springs", year: 2020, age: 18, rating: 7.4 },
+                    { title: "Soul", year: 2020, age: 6, rating: 8.0 },
+                    { title: "Wolfwalkers", year: 2020, age: 6, rating: 8.0 },
+                    { title: "Onward", year: 2020, age: 6, rating: 7.4 },
+                    { title: "Borat Subsequent Moviefilm", year: 2020, age: 18, rating: 6.6 },
+                    { title: "Hamilton", year: 2020, age: 12, rating: 8.3 },
+                    { title: "Don't Look Up", year: 2021, age: 16, rating: 7.2 },
+                    { title: "Licorice Pizza", year: 2021, age: 16, rating: 7.1 },
+                    { title: "Cruella", year: 2021, age: 12, rating: 7.3 },
+                    { title: "The French Dispatch", year: 2021, age: 16, rating: 7.1 },
+                    { title: "Encanto", year: 2021, age: 6, rating: 7.2 },
+                    { title: "Raya and the Last Dragon", year: 2021, age: 6, rating: 7.3 },
+                    { title: "Luca", year: 2021, age: 6, rating: 7.5 },
+                    { title: "The Mitchells vs. the Machines", year: 2021, age: 6, rating: 7.6 },
+                    { title: "West Side Story", year: 2021, age: 12, rating: 7.1 },
+                    { title: "Triangle of Sadness", year: 2022, age: 18, rating: 7.3 },
+                    { title: "Pinocchio (Guillermo del Toro)", year: 2022, age: 12, rating: 7.6 },
+                    { title: "Puss in Boots: The Last Wish", year: 2022, age: 6, rating: 7.9 },
+                    { title: "Turning Red", year: 2022, age: 6, rating: 7.0 },
+                    { title: "The Bad Guys", year: 2022, age: 6, rating: 6.8 },
+                    { title: "Elvis", year: 2022, age: 12, rating: 7.3 },
+                    { title: "Hustle", year: 2022, age: 12, rating: 7.3 },
+                    { title: "The Super Mario Bros. Movie", year: 2023, age: 6, rating: 7.0 },
+                    { title: "Wonka", year: 2023, age: 6, rating: 7.0 },
+                    { title: "Elemental", year: 2023, age: 6, rating: 7.0 },
+                    { title: "Asteroid City", year: 2023, age: 12, rating: 6.5 },
+                    { title: "The Boy and the Heron", year: 2023, age: 6, rating: 7.5 },
+                    { title: "Inside Out 2", year: 2024, age: 6, rating: 7.7 },
+                    { title: "Despicable Me 4", year: 2024, age: 6, rating: 6.2 },
+                    { title: "Kung Fu Panda 4", year: 2024, age: 6, rating: 6.3 },
+                    { title: "Moana 2", year: 2024, age: 6, rating: 6.5 },
+                    { title: "Wicked", year: 2024, age: 6, rating: 7.8 },
+                    { title: "Sonic the Hedgehog 3", year: 2024, age: 6, rating: 7.0 },
+                    { title: "Elio", year: 2025, age: 6, rating: 7.5 },
+                    { title: "Super Mario Bros. Movie 2", year: 2026, age: 6, rating: 7.2 },
+                    { title: "Frozen 3", year: 2026, age: 6, rating: 7.3 },
                     { title: "Időjárás-jelentés", year: 2005, age: 12, rating: 6.9 },
                     { title: "Hogyan veszítsünk el egy pasit 10 nap alatt", year: 2003, age: 12, rating: 6.2 },
                     { title: "Nász-ajánlat", year: 2009, age: 12, rating: 6.1 },
@@ -833,8 +1076,9 @@
                     { title: "Sonic, a sündisznó 3.", year: 2024, age: 6, rating: 7.0 },
                     { title: "Toy Story 5.", year: 2026, age: 6, rating: 7.5 },
                     { title: "Mufasa: Az oroszlánkirály", year: 2024, age: 6, rating: 7.0 },
-                    { title: "Így neveld a sárkányodat (élőszereplős)", year: 2025, age: 12, rating: 6.5 },
-                    { title: "Spider-Man: Beyond the Spider-Verse", year: 2025, age: 12, rating: 8.5 }
+                    { title: "Spider-Man 4", year: 2026, age: 12, rating: 8.0 },
+                    { title: "Spider-Man: Beyond the Spider-Verse", year: 2025, age: 12, rating: 8.5 },
+                    { title: "Így neveld a sárkányodat (élőszereplős)", year: 2025, age: 12, rating: 6.5 }
                 ]
             },
             "Horror, Thriller és Misztikum": {
@@ -891,7 +1135,24 @@
                     { title: "A séf (The Menu)", year: 2022, age: 18, rating: 7.8 },
                     { title: "Kifelé (Run)", year: 2020, age: 16, rating: 6.7 },
                     { title: "A platform (El Hoyo)", year: 2019, age: 18, rating: 7.0 },
-                    { title: "A bűn éjszakája (The Purge)", year: 2013, age: 18, rating: 5.7 }
+                    { title: "A bűn éjszakája (The Purge)", year: 2013, age: 18, rating: 5.7 },
+                    { title: "Promising Young Woman", year: 2020, age: 18, rating: 7.5 },
+                    { title: "Freaky", year: 2020, age: 16, rating: 6.3 },
+                    { title: "Last Night in Soho", year: 2021, age: 18, rating: 7.0 },
+                    { title: "Candyman", year: 2021, age: 18, rating: 5.9 },
+                    { title: "Halloween Kills", year: 2021, age: 18, rating: 5.5 },
+                    { title: "Nightmare Alley", year: 2021, age: 16, rating: 7.0 },
+                    { title: "Smile", year: 2022, age: 18, rating: 6.5 },
+                    { title: "Scream 5", year: 2022, age: 18, rating: 6.3 },
+                    { title: "Terrifier 2", year: 2022, age: 18, rating: 6.1 },
+                    { title: "Death on the Nile", year: 2022, age: 12, rating: 6.3 },
+                    { title: "Glass Onion", year: 2022, age: 12, rating: 7.1 },
+                    { title: "All Quiet on the Western Front", year: 2022, age: 18, rating: 7.8 },
+                    { title: "Talk to Me", year: 2023, age: 18, rating: 7.1 },
+                    { title: "Evil Dead Rise", year: 2023, age: 18, rating: 6.5 },
+                    { title: "Oppenheimer", year: 2023, age: 16, rating: 8.5 },
+                    { title: "A Quiet Place: Day One", year: 2024, age: 16, rating: 6.4 },
+                    { title: "Longlegs", year: 2024, age: 18, rating: 6.7 }
                 ]
             },
             "SOROZATOK - Dráma és Krimi": {
@@ -1446,40 +1707,64 @@
             `;
         }
 
+        const loadingMap = new Map();
         async function loadPosterForCard(card) {
             const title = card.getAttribute('data-title');
             const year = card.getAttribute('data-year');
             const isSeries = card.getAttribute('data-series') === 'true';
             const posterImg = card.querySelector('.movie-poster');
             
-            if (title && year && posterImg && !card.hasAttribute('data-loaded')) {
-                card.setAttribute('data-loaded', 'true');
-                
+            if (!title || !year || !posterImg) return;
+            
+            const cacheKey = `${title}-${year}-${isSeries ? 'series' : 'movie'}`;
+            
+            // Check if already loading
+            if (loadingMap.has(cacheKey)) {
+                return;
+            }
+            
+            // Check if already loaded
+            if (card.hasAttribute('data-loaded')) {
+                return;
+            }
+            
+            loadingMap.set(cacheKey, true);
+            card.setAttribute('data-loaded', 'true');
+            posterImg.classList.add('loading');
+            
+            try {
                 // Check cache first
-                const cacheKey = `${title}-${year}-${isSeries ? 'series' : 'movie'}`;
                 if (posterCache[cacheKey]) {
                     posterImg.src = posterCache[cacheKey];
+                    posterImg.classList.remove('loading');
                     return;
                 }
                 
                 // Load placeholder immediately
                 const placeholder = getPlaceholderImage(title, parseInt(year));
                 posterImg.src = placeholder;
+                posterImg.classList.remove('loading');
                 
                 // Try to load real poster in background
-                try {
-                    const realPoster = await getPosterImage(title, parseInt(year), isSeries);
-                    if (realPoster && realPoster !== placeholder) {
-                        // Preload image before setting src
-                        const img = new Image();
-                        img.onload = () => {
-                            posterImg.src = realPoster;
-                        };
-                        img.src = realPoster;
-                    }
-                } catch (error) {
-                    console.log('Error loading poster for:', title);
+                const realPoster = await getPosterImage(title, parseInt(year), isSeries);
+                if (realPoster && realPoster !== placeholder) {
+                    posterImg.classList.add('loading');
+                    // Preload image before setting src
+                    const img = new Image();
+                    img.onload = () => {
+                        posterImg.src = realPoster;
+                        posterImg.classList.remove('loading');
+                    };
+                    img.onerror = () => {
+                        posterImg.classList.remove('loading');
+                    };
+                    img.src = realPoster;
                 }
+            } catch (error) {
+                console.log('Error loading poster for:', title);
+                posterImg.classList.remove('loading');
+            } finally {
+                loadingMap.delete(cacheKey);
             }
         }
 
@@ -1606,7 +1891,8 @@
                         'comedy': ['vígjáték', 'romantika'],
                         'scifi': ['sci-fi', 'fantasy', 'kaland'],
                         'horror': ['horror', 'thriller'],
-                        'romance': ['romantika', 'vígjáték']
+                        'romance': ['romantika', 'vígjáték'],
+                        'marvel': ['marvel']
                     };
                     
                     if (genreMap[genreFilter]) {
@@ -1685,20 +1971,40 @@
         }
         
         function addToFavorites(movie) {
-            const exists = favorites.some(f => f.title === movie.title);
-            if (!exists) {
-                favorites.push(movie);
-                localStorage.setItem('favorites', JSON.stringify(favorites));
-                alert('Hozzáadva a kedvencekhez!');
-            } else {
-                alert('Már a kedvencek között van!');
+            try {
+                const exists = favorites.some(f => f.title === movie.title);
+                if (!exists) {
+                    favorites.push(movie);
+                    localStorage.setItem('favorites', JSON.stringify(favorites));
+                    // Show visual feedback instead of alert
+                    const button = event.target;
+                    button.textContent = '✓ Hozzáadva';
+                    button.classList.add('bg-green-600');
+                    setTimeout(() => {
+                        button.textContent = '❤️';
+                        button.classList.remove('bg-green-600');
+                    }, 2000);
+                } else {
+                    // Show visual feedback for already added
+                    const button = event.target;
+                    button.textContent = 'Már hozzáadva';
+                    setTimeout(() => {
+                        button.textContent = '❤️';
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Error adding to favorites:', error);
             }
         }
         
         function removeFromFavorites(movie) {
-            favorites = favorites.filter(f => f.title !== movie.title);
-            localStorage.setItem('favorites', JSON.stringify(favorites));
-            toggleFavorites();
+            try {
+                favorites = favorites.filter(f => f.title !== movie.title);
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                toggleFavorites();
+            } catch (error) {
+                console.error('Error removing from favorites:', error);
+            }
         }
         
         // Franchise detection
@@ -1855,120 +2161,136 @@
         
         // Detail view modal
         async function showDetail(movie) {
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 fade-in';
-            modal.onclick = (e) => {
-                if (e.target === modal) modal.remove();
-            };
-            
-            const isSeries = movie.category && movie.category.startsWith('SOROZATOK');
-            const franchise = detectFranchise(movie.title);
-            const relatedMovies = franchise ? getRelatedMovies(franchise, movie.title) : [];
-            const streamingAvailability = await getStreamingAvailability(movie.title, movie.year, isSeries);
-            
-            modal.innerHTML = `
-                <div class="bg-[#1a1a1a] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-800 shadow-2xl">
-                    <div class="flex flex-col md:flex-row">
-                        <div class="md:w-1/3 relative">
-                            <img id="modal-poster" src="${getPlaceholderImage(movie.title, movie.year)}" alt="${movie.title}" class="w-full rounded-t-lg md:rounded-l-lg md:rounded-tr-none">
-                            <div class="absolute top-2 left-2 bg-red-600/90 backdrop-blur-sm text-white px-3 py-1 rounded text-sm font-bold shadow-lg">
-                                ⭐ ${movie.rating}
-                            </div>
-                        </div>
-                        <div class="md:w-2/3 p-6">
-                            <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-white text-2xl hover:text-red-500 transition-colors z-10">&times;</button>
-                            
-                            <h2 class="text-2xl md:text-3xl font-bold text-white mb-2 title-font tracking-wide">${movie.title}</h2>
-                            
-                            <div class="flex items-center gap-4 mb-4 text-gray-300">
-                                <span class="bg-gray-800 px-2 py-1 rounded text-sm">📅 ${movie.year}</span>
-                                <span class="bg-gray-800 px-2 py-1 rounded text-sm">🔞 ${movie.age}+</span>
-                                <span class="bg-gray-800 px-2 py-1 rounded text-sm">⭐ ${movie.rating}</span>
-                            </div>
-                            
-                            <div class="flex gap-3 mb-6 flex-wrap">
-                                <button onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' trailer')}', '_blank')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center gap-2 transition-colors shadow-lg">
-                                    🎬 Előzetes
-                                </button>
-                                <button onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(movie.title + ' videa site:videa.hu')}', '_blank')" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded flex items-center gap-2 transition-colors shadow-lg">
-                                    🎥 Videa
-                                </button>
-                                <button onclick="window.open('https://www.imdb.com/find?q=${encodeURIComponent(movie.title)}', '_blank')" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded flex items-center gap-2 transition-colors shadow-lg">
-                                    IMDb
-                                </button>
-                                <button onclick="addToFavorites({title: '${movie.title}', year: ${movie.year}, age: ${movie.age}, rating: ${movie.rating}, category: '${movie.category || ''}'})" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded flex items-center gap-2 transition-colors shadow-lg">
-                                    ❤️ Kedvenc
-                                </button>
-                            </div>
-                            
-                            <div class="mb-6">
-                                <h3 class="text-white font-bold mb-2 text-lg">Rövid leírás</h3>
-                                <p class="text-gray-400 text-sm leading-relaxed">
-                                    Fedezd fel ezt a ${movie.year}-es ${movie.age}+ korhatáros filmet, amely ${movie.rating}-os értékelést kapott. 
-                                    ${franchise ? `A(z) ${franchise} franchise része.` : ''}
-                                </p>
-                            </div>
-                            
-                            ${streamingAvailability && (streamingAvailability.flatrate?.length > 0 || streamingAvailability.rent?.length > 0 || streamingAvailability.buy?.length > 0) ? `
-                                <div class="mb-6">
-                                    <h3 class="text-white font-bold mb-3 text-lg">Elérhető platformokon:</h3>
-                                    ${streamingAvailability.flatrate && streamingAvailability.flatrate.length > 0 ? `
-                                        <div class="mb-3">
-                                            <p class="text-gray-400 text-sm mb-2">📺 Streaming:</p>
-                                            <div class="flex gap-2 flex-wrap">
-                                                ${streamingAvailability.flatrate.map(provider => {
-                                                    const fallbackUrl = getPlatformSearchUrl(provider.provider_name, movie.title);
-                                                    const href = provider.link || fallbackUrl;
-                                                    return `<a href="${href}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition shadow">${provider.provider_name}</a>`;
-                                                }).join('')}
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                    ${streamingAvailability.rent && streamingAvailability.rent.length > 0 ? `
-                                        <div class="mb-3">
-                                            <p class="text-gray-400 text-sm mb-2">💰 Bérlés:</p>
-                                            <div class="flex gap-2 flex-wrap">
-                                                ${streamingAvailability.rent.map(provider => {
-                                                    const fallbackUrl = getPlatformSearchUrl(provider.provider_name, movie.title);
-                                                    const href = provider.link || fallbackUrl;
-                                                    return `<a href="${href}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition shadow">${provider.provider_name}</a>`;
-                                                }).join('')}
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                    ${streamingAvailability.buy && streamingAvailability.buy.length > 0 ? `
-                                        <div class="mb-3">
-                                            <p class="text-gray-400 text-sm mb-2">🛒 Vásárlás:</p>
-                                            <div class="flex gap-2 flex-wrap">
-                                                ${streamingAvailability.buy.map(provider => {
-                                                    const fallbackUrl = getPlatformSearchUrl(provider.provider_name, movie.title);
-                                                    const href = provider.link || fallbackUrl;
-                                                    return `<a href="${href}" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition shadow">${provider.provider_name}</a>`;
-                                                }).join('')}
-                                            </div>
-                                        </div>
-                                    ` : ''}
+            try {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 fade-in';
+                modal.onclick = (e) => {
+                    if (e.target === modal) modal.remove();
+                };
+                
+                const isSeries = movie.category && movie.category.startsWith('SOROZATOK');
+                const franchise = detectFranchise(movie.title);
+                const relatedMovies = franchise ? getRelatedMovies(franchise, movie.title) : [];
+                
+                let streamingAvailability = null;
+                try {
+                    streamingAvailability = await getStreamingAvailability(movie.title, movie.year, isSeries);
+                } catch (error) {
+                    console.log('Error fetching streaming availability:', error);
+                }
+                
+                modal.innerHTML = `
+                    <div class="bg-[#1a1a1a] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-800 shadow-2xl">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/3 relative">
+                                <img id="modal-poster" src="${getPlaceholderImage(movie.title, movie.year)}" alt="${movie.title}" class="w-full rounded-t-lg md:rounded-l-lg md:rounded-tr-none">
+                                <div class="absolute top-2 left-2 bg-red-600/90 backdrop-blur-sm text-white px-3 py-1 rounded text-sm font-bold shadow-lg">
+                                    ⭐ ${movie.rating}
                                 </div>
-                            ` : ''}
-                            
-                            ${relatedMovies.length > 0 ? `
+                            </div>
+                            <div class="md:w-2/3 p-6">
+                                <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-white text-2xl hover:text-red-500 transition-colors z-10">&times;</button>
+                                
+                                <h2 class="text-2xl md:text-3xl font-bold text-white mb-2 title-font tracking-wide">${movie.title}</h2>
+                                
+                                <div class="flex items-center gap-4 mb-4 text-gray-300">
+                                    <span class="bg-gray-800 px-2 py-1 rounded text-sm">📅 ${movie.year}</span>
+                                    <span class="bg-gray-800 px-2 py-1 rounded text-sm">🔞 ${movie.age}+</span>
+                                    <span class="bg-gray-800 px-2 py-1 rounded text-sm">⭐ ${movie.rating}</span>
+                                </div>
+                                
+                                <div class="flex gap-3 mb-6 flex-wrap">
+                                    <button onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' trailer')}', '_blank')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center gap-2 transition-colors shadow-lg">
+                                        🎬 Előzetes
+                                    </button>
+                                    <button onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(movie.title + ' videa site:videa.hu')}', '_blank')" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded flex items-center gap-2 transition-colors shadow-lg">
+                                        🎥 Videa
+                                    </button>
+                                    <button onclick="window.open('https://www.imdb.com/find?q=${encodeURIComponent(movie.title)}', '_blank')" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded flex items-center gap-2 transition-colors shadow-lg">
+                                        IMDb
+                                    </button>
+                                    <button onclick="addToFavorites({title: '${movie.title}', year: ${movie.year}, age: ${movie.age}, rating: ${movie.rating}, category: '${movie.category || ''}'})" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded flex items-center gap-2 transition-colors shadow-lg">
+                                        ❤️ Kedvenc
+                                    </button>
+                                </div>
+                                
                                 <div class="mb-6">
-                                    <h3 class="text-white font-bold mb-3 text-lg">🔗 Kapcsolódó filmek:</h3>
-                                    <div class="flex gap-2 flex-wrap">
-                                        ${relatedMovies.slice(0, 5).map(m => `<button onclick="showDetail({title: '${m.title}', year: ${m.year}, age: ${m.age}, rating: ${m.rating}, category: '${m.category || ''}'})" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition border border-gray-700 hover:border-red-600">${m.title}</button>`).join('')}
+                                    <h3 class="text-white font-bold mb-2 text-lg">Rövid leírás</h3>
+                                    <p class="text-gray-400 text-sm leading-relaxed">
+                                        Fedezd fel ezt a ${movie.year}-es ${movie.age}+ korhatáros filmet, amely ${movie.rating}-os értékelést kapott. 
+                                        ${franchise ? `A(z) ${franchise} franchise része.` : ''}
+                                    </p>
+                                </div>
+                                
+                                ${streamingAvailability && (streamingAvailability.flatrate?.length > 0 || streamingAvailability.rent?.length > 0 || streamingAvailability.buy?.length > 0) ? `
+                                    <div class="mb-6">
+                                        <h3 class="text-white font-bold mb-3 text-lg">Elérhető platformokon:</h3>
+                                        ${streamingAvailability.flatrate && streamingAvailability.flatrate.length > 0 ? `
+                                            <div class="mb-3">
+                                                <p class="text-gray-400 text-sm mb-2">📺 Streaming:</p>
+                                                <div class="flex gap-2 flex-wrap">
+                                                    ${streamingAvailability.flatrate.map(provider => {
+                                                        const fallbackUrl = getPlatformSearchUrl(provider.provider_name, movie.title);
+                                                        const href = provider.link || fallbackUrl;
+                                                        return `<a href="${href}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition shadow">${provider.provider_name}</a>`;
+                                                    }).join('')}
+                                                </div>
+                                            </div>
+                                        ` : ''}
+                                        ${streamingAvailability.rent && streamingAvailability.rent.length > 0 ? `
+                                            <div class="mb-3">
+                                                <p class="text-gray-400 text-sm mb-2">💰 Bérlés:</p>
+                                                <div class="flex gap-2 flex-wrap">
+                                                    ${streamingAvailability.rent.map(provider => {
+                                                        const fallbackUrl = getPlatformSearchUrl(provider.provider_name, movie.title);
+                                                        const href = provider.link || fallbackUrl;
+                                                        return `<a href="${href}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition shadow">${provider.provider_name}</a>`;
+                                                    }).join('')}
+                                                </div>
+                                            </div>
+                                        ` : ''}
+                                        ${streamingAvailability.buy && streamingAvailability.buy.length > 0 ? `
+                                            <div class="mb-3">
+                                                <p class="text-gray-400 text-sm mb-2">🛒 Vásárlás:</p>
+                                                <div class="flex gap-2 flex-wrap">
+                                                    ${streamingAvailability.buy.map(provider => {
+                                                        const fallbackUrl = getPlatformSearchUrl(provider.provider_name, movie.title);
+                                                        const href = provider.link || fallbackUrl;
+                                                        return `<a href="${href}" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition shadow">${provider.provider_name}</a>`;
+                                                    }).join('')}
+                                                </div>
+                                            </div>
+                                        ` : ''}
                                     </div>
-                                </div>
-                            ` : ''}
+                                ` : `
+                                    <div class="mb-6">
+                                        <h3 class="text-white font-bold mb-3 text-lg">Elérhető platformokon:</h3>
+                                        <p class="text-gray-400 text-sm">Nem sikerült lekérni a streaming elérhetőséget. Próbáld meg a fenti gombokat a kereséshez.</p>
+                                    </div>
+                                `}
+                                
+                                ${relatedMovies.length > 0 ? `
+                                    <div class="mb-6">
+                                        <h3 class="text-white font-bold mb-3 text-lg">🔗 Kapcsolódó filmek:</h3>
+                                        <div class="flex gap-2 flex-wrap">
+                                            ${relatedMovies.slice(0, 5).map(m => `<button onclick="showDetail({title: '${m.title}', year: ${m.year}, age: ${m.age}, rating: ${m.rating}, category: '${m.category || ''}'})" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition border border-gray-700 hover:border-red-600">${m.title}</button>`).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            // Load poster for modal
-            const poster = document.getElementById('modal-poster');
-            loadPosterForModal(movie);
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // Load poster for modal
+                const poster = document.getElementById('modal-poster');
+                loadPosterForModal(movie);
+            } catch (error) {
+                console.error('Error showing movie details:', error);
+                alert('Hiba történt a film részleteinek betöltésekor.');
+            }
         }
         
         async function loadPosterForModal(movie) {
@@ -2031,6 +2353,16 @@
             const container = document.getElementById('movies-container');
             container.innerHTML = '';
             
+            // Show loading skeleton
+            container.innerHTML += `
+                <div class="mb-8">
+                    <div class="h-8 w-48 skeleton rounded mb-4"></div>
+                    <div class="flex gap-4">
+                        ${Array(6).fill().map(() => '<div class="loading-skeleton skeleton"></div>').join('')}
+                    </div>
+                </div>
+            `;
+            
             // Search and filters section
             container.innerHTML += `
                 <div class="mb-8 p-6 bg-[#1a1a1a] rounded-lg border border-gray-800">
@@ -2049,6 +2381,7 @@
                             <option value="scifi">Sci-fi</option>
                             <option value="horror">Horror</option>
                             <option value="romance">Romantika</option>
+                            <option value="marvel">Marvel</option>
                         </select>
                         <select id="year-filter" onchange="applyFilters()" class="bg-gray-900 text-white px-4 py-3 rounded border border-gray-700 focus:outline-none focus:border-red-600">
                             <option value="all">Év</option>
@@ -2094,6 +2427,10 @@
             for (const [categoryName, categoryData] of Object.entries(movieData)) {
                 container.innerHTML += createCategorySection(categoryName, categoryData);
             }
+            
+            // Remove loading skeleton
+            const skeletons = container.querySelectorAll('.skeleton');
+            skeletons.forEach(s => s.remove());
             
             setupLazyLoading();
         }
